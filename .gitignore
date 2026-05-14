@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+*.egg-info/
+.venv/
+venv/
+.DS_Store
+
+# Presentation files (too large for GitHub)
+汇报.pptx
+汇报.pdf
+讲稿.docx
+
+# Generated output
+pred_random_forest.csv
+pred_lstm.csv
+grid_search_results.csv

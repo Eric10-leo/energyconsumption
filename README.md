@@ -1,0 +1,49 @@
+# 建筑能耗预测 (Building Energy Consumption Prediction)
+
+基于随机森林与 LSTM 的建筑能耗时序预测模型，使用两年的逐时能耗数据（17,544 条），结合气象特征进行预测。
+
+## 数据说明
+
+- **数据量**: 17,544 条逐时记录（2016.01 — 2017.12）
+- **目标变量**: Power（建筑能耗/功率）
+- **特征**: 气温 (airTemperature)、露点温度 (dewTemperature)、风速 (windSpeed)、小时 (hour)、星期几 (day_of_week)、月份 (month)
+- 来源：实际建筑监测数据，详见 `数据说明.docx`
+
+## 方法
+
+### 随机森林 (Random Forest)
+作为非时序 baseline，用特征直接预测能耗，同时输出特征重要性。
+
+### LSTM + 滑动窗口
+将时序数据通过滑动窗口重构为监督学习样本：用过去 N 小时的数据预测下一小时能耗。
+
+### 网格搜索 + 早停优化
+- 网格搜索：穷举时间步长 `[12, 24, 48]` × 隐藏层维度 `[64, 128, 256]` 共 9 组参数
+- 早停策略：验证损失连续 5 轮不降即终止训练，恢复最优权重，防止过拟合
+
+## 结果
+
+| 模型 | R² | RMSE |
+|------|-----|------|
+| Random Forest | 0.610 | 44.35 |
+| LSTM (基线, 24-128) | 0.954 | 15.19 |
+| **LSTM (网格搜索最优)** | **0.971** | **12.33** |
+
+## 运行
+
+```bash
+pip install -r requirements.txt
+jupyter notebook 建筑能耗预测_RF_LSTM.ipynb
+```
+
+## 文件结构
+
+```
+├── building_energy.csv           # 原始数据
+├── 建筑能耗预测_RF_LSTM.ipynb     # 主 notebook
+├── pred_random_forest.csv        # RF 预测结果
+├── pred_lstm.csv                 # LSTM 预测结果
+├── grid_search_results.csv       # 网格搜索记录
+├── requirements.txt
+└── README.md
+```
